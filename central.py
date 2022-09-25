@@ -3,11 +3,11 @@ import flickrapi
 from icecream import ic
 import webbrowser
 
-from config import api_key, api_secret, shacker_user_id
+from config import api_key, api_secret, user_id
 
 GROUP_ID = "34427469792@N01"  # For Flickr Central
 
-ans = input(f"This will remove all photos for user {shacker_user_id} from group {GROUP_ID}. Continue? ")
+ans = input(f"This will remove all photos for user {user_id} from group {GROUP_ID}. Continue? ")
 if ans not in ["Y", "y"]:
     sys.exit()
 
@@ -33,7 +33,7 @@ if not flickr.token_valid(perms="write"):
 
 
 # Get and remove images from the group
-results = flickr.groups.pools.getPhotos(GROUP_ID=GROUP_ID, user_id=shacker_user_id)
+results = flickr.groups.pools.getPhotos(GROUP_ID=GROUP_ID, user_id=user_id)
 for idx, result in enumerate(results["photos"]["photo"]):
 
     # Leave the most recent image in place
