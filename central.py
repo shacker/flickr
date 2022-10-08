@@ -5,20 +5,21 @@ import webbrowser
 
 from config import api_key, api_secret, user_id
 
-GROUP_ID = "34427469792@N01"  # For Flickr Central
+
+STORE_TOKEN = True  # Set to False if auth problems
+GROUP_ID = "34427469792@N01"  # Flickr Central
 
 ans = input(f"This will remove all photos for user {user_id} from group {GROUP_ID}. Continue? ")
 if ans not in ["Y", "y"]:
     sys.exit()
 
-
-flickr = flickrapi.FlickrAPI(api_key, api_secret, format="parsed-json")
+# store_token=False means we re-enter the verification string each time
+flickr = flickrapi.FlickrAPI(api_key, api_secret, format="parsed-json", store_token=STORE_TOKEN)
 
 # Authorize if needed. Via
 # https://stuvel.eu/flickrapi-doc/3-auth.html#non-web-applications
 if not flickr.token_valid(perms="write"):
 
-    # Get a request token
     flickr.get_request_token(oauth_callback="oob")
 
     # Open a browser at the authentication URL.
@@ -33,7 +34,7 @@ if not flickr.token_valid(perms="write"):
 
 
 # Get and remove images from the group
-results = flickr.groups.pools.getPhotos(GROUP_ID=GROUP_ID, user_id=user_id)
+results = flickr.groups.pools.getPhotos(group_id=GROUP_ID, user_id=user_id)
 for idx, result in enumerate(results["photos"]["photo"]):
 
     # Leave the most recent image in place
@@ -42,5 +43,5 @@ for idx, result in enumerate(results["photos"]["photo"]):
 
     id = result["id"]
     print(f"Removing image {id} - {result['title']}")
-    resp = flickr.groups.pools.remove(photo_id=id, GROUP_ID=GROUP_ID)
+    resp = flickr.groups.pools.remove(photo_id=id, group_id=GROUP_ID)
     ic(resp)
